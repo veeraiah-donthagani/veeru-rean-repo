@@ -50,3 +50,22 @@ default_plugins				 | default plugins to be installed like git, rvm etc,.
 extra_plugins                | any additional plugins needed
 ['terraform']['version']	 | terraform version
 ['packer']['version']		 | packer version
+
+
+Attribues to pass
+-----------------
+
+export AWS_REGION=""
+export SUBNET_ID=""
+export SG_ID=""
+export RHEL_AMI=""
+export SSH_KEY=""
+export IAM_PROFILE="s3_access"
+export PUBLIC_IP="true"
+export TAGS_OWNER=""
+export TAGS_ENVIRONMENT="Testing"
+export TAGS_PROJECT="Learning"
+export TAGS_EXPIRY="2018-08-09"
+export SSH_KEY_PATH="test.pem"
+export S3_BUCKET=""
+export JENKINS_ADMIN_EMAIL="xxxxx@xxxxx.com"
