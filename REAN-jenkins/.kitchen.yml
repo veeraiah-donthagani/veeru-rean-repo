@@ -1,0 +1,106 @@
+---
+driver:
+  name: ec2
+  region: <%= ENV['AWS_REGION'] %>
+  subnet_id: <%= ENV['SUBNET_ID'] %>
+  security_group_ids: ["<%= ENV['SG_ID'] %>"]
+  image_id: "<%= ENV['RHEL_AMI'] %>"
+  instance_type: t2.medium
+  aws_ssh_key_id: <%= ENV['SSH_KEY'] %>
+  iam_profile_name: "S3_FullAccess"
+  associate_public_ip: <%= ENV['PUBLIC_IP'] %>
+  tags:
+    Name: REAN-jenkins
+    Owner: <%= ENV['TAGS_OWNER'] %>
+    Environment: <%= ENV['TAGS_ENVIRONMENT'] %>
+    Project: <%= ENV['TAGS_PROJECT'] %>
+    Product: REAN-Jenkins
+
+transport:
+  ssh_key: <%= ENV['SSH_KEY_PATH'] %>
+  connection_timeout: 10
+  connection_retries: 5
+  username: ec2-user
+  # name: rsync
+
+provisioner:
+  name: chef_solo
+  require_chef_omnibus: 13.9.4
+
+platforms:
+    - name: redhat-7
+      block_device_mappings:
+      - device_name: /dev/sdb
+        ebs:
+        volume_type: gp2
+        virtual_name: test
+        volume_size: 50
+        delete_on_termination: true
+
+suites:
+  - name: jenkins-java-tar
+    run_list:
+      - recipe[REAN-jenkins::default]
+    attributes:
+      REAN-jenkins:
+        devops_tools: true
+        s3_reanplatform_tools_bucket: <%= ENV['S3_BUCKET'] %>
+        s3_reanplatform_tools_folder: shared/platform-artifacts/reanplatformtools
+        s3_reanplatform_tools_region: <%= ENV['AWS_REGION'] %>
+        s3_radar_publisher_bucket: <%= ENV['S3_BUCKET'] %>
+        s3_radar_publisher_folder: shared/platform-artifacts
+        s3_radar_publisher_region: <%= ENV['AWS_REGION'] %>
+        tomcat_bucket: <%= ENV['S3_BUCKET'] %>
+        tomcat_prefix: shared/platform-artifacts/tomcat
+        tomcat_region: <%= ENV['AWS_REGION'] %>
+        require_java: true
+        require_tomcat: false
+        require_service: true
+        rhel_username: root
+        rhel_password: root123
+        admin_username: admin
+        admin_password: admin123
+        admin_fullname: administrator
+        admin_email: <%= ENV['JENKINS_ADMIN_EMAIL'] %>
+        terraform_s3_name: <%= ENV['S3_BUCKET'] %>
+        terraform_s3_prefix: 'shared/platform-artifacts/terraform'
+        terraform_s3_key: 'terraform_0.9.11_linux_amd64.zip'
+        terraform_s3_region: <%= ENV['AWS_REGION'] %>
+        terraform_checksum: '804d31cfa5fee5c2b1bff7816b64f0e26b1d766ac347c67091adccc2626e16f3'
+        firewall: false
+        selinux: true
+        rvm_s3_bucket: <%= ENV['S3_BUCKET'] %>
+        rvm_s3_region: <%= ENV['AWS_REGION'] %>
+        rvm_s3_prefix: shared/platform-artifacts/rvm
+        rvm_s3_key: rvm-1.29.3.tar.gz
+        rvm_checksum: 59ec867ed946029b403c0028ee600a9023d1ab3256e7df2898c54044cfd0363b
+        ruby_s3_bucket: <%= ENV['S3_BUCKET'] %>
+        ruby_s3_region: <%= ENV['AWS_REGION'] %>
+        ruby_s3_prefix: shared/platform-artifacts/rvm
+        ruby_s3_key: ruby-2.4.2.tar.bz2
+        ruby_checksum: 4959c746f7a81126a6861d14daad526d5b024a821f5564d7033a076229853e20
+        gem: bundler
+        gem_s3_key: bundler-1.16.2.gem
+        gem_checksum: 3bb53e03db0a8008161eb4c816ccd317120d3c415ba6fee6f90bbc7f7eec8690
+        gem_s3_bucket: <%= ENV['S3_BUCKET'] %>
+        gem_s3_region: <%= ENV['AWS_REGION'] %>
+        gem_s3_prefix: shared/platform-artifacts/rvm
+        jenkins_plugin_online_install: true
+
+      REAN-Java:
+        rpm: true
+        jce: true
+        version: 8
+        java_s3_bucket: <%= ENV['S3_BUCKET'] %>
+        java_s3_region: <%= ENV['AWS_REGION'] %>
+        java_s3_prefix: shared/platform-artifacts/Oracle-jdk
+        java_s3_key: jdk-8u172-linux-x64.rpm
+        java_checksum: 6a27b5718a5266cc725478d0b2e30fdc9bdb74b4e496971ed0f3b9c334d08163
+        jce_s3_bucket: <%= ENV['S3_BUCKET'] %>
+        jce_s3_region: <%= ENV['AWS_REGION'] %>
+        jce_s3_prefix: shared/platform-artifacts/Oracle-jce
+        jce_s3_key: jce_policy-8.zip
+        jce_checksum: f3020a3922efd6626c2fff45695d527f34a8020e938a49292561f18ad1320b59
+    verifier:
+      inspec_tests:
+        - test/smoke

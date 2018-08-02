@@ -1,0 +1,16 @@
+default['REAN-jenkins']['rvm_s3_bucket'] = nil
+default['REAN-jenkins']['rvm_s3_region'] = nil
+default['REAN-jenkins']['rvm_s3_prefix'] = nil
+default['REAN-jenkins']['rvm_s3_key'] = nil
+default['REAN-jenkins']['rvm_checksum'] = nil
+default['REAN-jenkins']['ruby_s3_bucket'] = nil
+default['REAN-jenkins']['ruby_s3_region'] = nil
+default['REAN-jenkins']['ruby_s3_prefix'] = nil
+default['REAN-jenkins']['ruby_s3_key'] = nil
+default['REAN-jenkins']['ruby_checksum'] = nil
+default['REAN-jenkins']['gem'] = nil
+default['REAN-jenkins']['gem_s3_key'] = nil
+default['REAN-jenkins']['gem_checksum'] = nil
+default['REAN-jenkins']['gem_s3_bucket'] = nil
+default['REAN-jenkins']['gem_s3_region'] = nil
+default['REAN-jenkins']['gem_s3_prefix'] = nil
