@@ -1,7 +1,7 @@
 include_recipe 'selinux_policy::install'
 
-jenkins_home = '/opt/jenkins'
-
+#jenkins_home = '/opt/jenkins' 
+jenkins_home = node['REAN-jenkins']['master']['home']
 # Apply SELinux policy for Jenkins HOME
 selinux_policy_fcontext jenkins_home do
   secontext 'user_home_dir_t'
